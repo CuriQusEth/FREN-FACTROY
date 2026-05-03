@@ -1,20 +1,44 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Fren Factory 🏭🧸
 
-# Run and deploy your AI Studio app
+A fun, addictive idle/clicker + factory management game built on the Base ecosystem! Players build and upgrade a factory that produces cute Frens, earning resources and merging them to discover rare tiers.
 
-This contains everything you need to run your app locally.
+## Features ✨
+- **Idle Clicker Mechanics:** Tap to produce Goo and manage your energy.
+- **Factory Upgrades:** Automate production, increase capacity, and speed up hatching.
+- **Merge & Evolve:** Hatch basic Frens, then merge them to unlock Rare, Epic, Legendary, and Mythic Frens!
+- **Base Ecosystem Native:** Full Wallet connection with Wagmi and Viem.
+- **ERC-8021 Attribution:** Tracks onchain metrics securely.
+- **Passive Yield:** Earn $FREN tokens based on your active collection.
 
-View your app in AI Studio: https://ai.studio/apps/a0a69776-b21a-4765-b362-f34107b78b7b
+## Tech Stack 🛠️
+- React + Vite
+- Wagmi v2 + Viem (Base & Base Sepolia)
+- Tailwind CSS v4 + styled with custom frosted glass UI
+- Shadcn UI components
+- Framer Motion animations
 
-## Run Locally
-
-**Prerequisites:**  Node.js
-
+## Getting Started 🚀
 
 1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```bash
+npm install
+```
+
+2. Start the development server:
+```bash
+npm run dev
+```
+
+3. Build for production:
+```bash
+npm run build
+```
+
+## Game Mechanics 🧬
+1. **Produce Goo:** Click the giant 💧 to generate Goo.
+2. **Hatch Frens:** Spend Goo to hatch your first common Frens.
+3. **Merge:** Combine two Frens of the same rarity to evolve them into the next tier.
+4. **Collect:** Build up your treasury and discover all 24 Fren variants!
+
+## Deployment
+This app can be deployed to Vercel, Netlify, or any static hosting service. Thanks to Vite, the build process is lightning fast.
