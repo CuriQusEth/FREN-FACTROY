@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
-import { WalletConnect } from './components/WalletConnect';
-import { useGame, GameProvider, Rarity, Fren } from './lib/GameContext';
+import { WalletConnect } from '@/components/WalletConnect';
+import { useGame, GameProvider, Rarity, Fren } from '@/lib/GameContext';
 import { useAccount, useSendTransaction } from 'wagmi';
-import { Button } from './components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from './components/ui/card';
-import { Progress } from './components/ui/progress';
-import { Badge } from './components/ui/badge';
-import { ScrollArea } from './components/ui/scroll-area';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Toaster } from './components/ui/sonner';
+import { Toaster } from '@/components/ui/sonner';
 import { motion, AnimatePresence } from 'motion/react';
 import { encodeFunctionData } from 'viem';
-import { BUILDER_CODE } from './config';
-import { FREN_FACTORY_ABI, FREN_FACTORY_ADDRESS } from './contracts';
+import { BUILDER_CODE } from '@/config';
+import { FREN_FACTORY_ABI, FREN_FACTORY_ADDRESS } from '@/contracts';
 
 // Utilities
 const generateId = () => Math.random().toString(36).substr(2, 9);
