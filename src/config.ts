@@ -1,19 +1,21 @@
-import { http, createConfig } from 'wagmi'
+import { http, createConfig, createStorage, cookieStorage } from 'wagmi'
 import { base, baseSepolia } from 'wagmi/chains'
-import { coinbaseWallet } from 'wagmi/connectors'
+import { baseAccount, injected } from 'wagmi/connectors'
 
 export const config = createConfig({
   chains: [baseSepolia, base],
   connectors: [
-    coinbaseWallet({ 
-      appName: 'Fren Factory',
-      preference: 'all'
+    injected(),
+    baseAccount({ 
+      appName: 'Batch Wizard',
     })
   ],
+  storage: createStorage({ storage: cookieStorage }),
+  ssr: true,
   transports: {
     [baseSepolia.id]: http(),
     [base.id]: http(),
   },
 })
 
-export const BUILDER_CODE = "bc_i3cpa0pz";
+export const BUILDER_CODE = "batchwizard";

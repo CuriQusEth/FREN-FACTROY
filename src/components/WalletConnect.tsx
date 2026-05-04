@@ -1,17 +1,12 @@
-import { useAccount, useConnect, useDisconnect, useSendTransaction } from 'wagmi'
-import { Button } from '@/components/ui/button'
-import { BUILDER_CODE } from '@/config'
-import { toHex, encodeFunctionData } from 'viem'
-import { FREN_FACTORY_ABI, FREN_FACTORY_ADDRESS } from '@/contracts'
+import { useAccount, useConnect, useDisconnect } from 'wagmi'
+import { SignInWithBase } from './SignInWithBase'
 
 export function WalletConnect() {
-  const { address, isConnected } = useAccount()
+  const { address, status } = useAccount()
   const { connect, connectors, error } = useConnect()
   const { disconnect } = useDisconnect()
 
-  const { sendTransaction } = useSendTransaction()
-
-  if (isConnected) {
+  if (status === 'connected') {
     return (
       <div className="flex items-center gap-3">
         <button className="px-6 py-2 bg-[#0052FF] hover:bg-[#1a66ff] rounded-2xl font-bold text-sm border-b-4 border-blue-800 transition-all font-mono text-white">
@@ -26,16 +21,22 @@ export function WalletConnect() {
 
   return (
     <div className="flex gap-2">
-      {connectors.map((connector) => (
-        <button
-          key={connector.uid}
-          onClick={() => connect({ connector })}
-          className="px-6 py-2 bg-[#0052FF] hover:bg-[#1a66ff] rounded-2xl font-bold text-sm border-b-4 border-blue-800 transition-all text-white flex items-center gap-2"
-        >
-          <span>🚀</span> Connect
-        </button>
-      ))}
-      {error && <div className="text-red-400 mt-2 text-xs">{error.message}</div>}
+      {connectors.map((connector) => {
+        if (connector.name === 'Base Account') {
+          return <SignInWithBase key={connector.uid} connector={connector} />
+        } else {
+          return (
+            <button
+              key={connector.uid}
+              onClick={() => connect({ connector })}
+              className="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-2xl font-bold text-sm border-b-4 border-white/20 transition-all text-white flex items-center gap-2"
+            >
+              {connector.name}
+            </button>
+          )
+        }
+      })}
+      {error && <div className="text-red-400 mt-2 text-xs absolute right-0 top-16">{error.message}</div>}
     </div>
   )
 }
