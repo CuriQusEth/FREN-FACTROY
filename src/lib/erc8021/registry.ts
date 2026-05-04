@@ -10,7 +10,7 @@ export class MockCodeRegistryClient implements ICodeRegistry {
     return "0x1234567890123456789012345678901234567890";
   }
   async codeURI(code: string): Promise<string> {
-    return \`https://api.base.dev/v1/agents/builder-codes/\${code}\`;
+    return `https://api.base.dev/v1/agents/builder-codes/${code}`;
   }
   async isValidCode(code: string): Promise<boolean> {
     return code.length > 0;

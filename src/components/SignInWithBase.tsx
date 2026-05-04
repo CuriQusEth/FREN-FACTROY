@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 
 interface SignInWithBaseProps {
   connector: Connector;
+  key?: string;
 }
 
 export function SignInWithBase({ connector }: SignInWithBaseProps) {

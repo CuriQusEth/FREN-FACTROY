@@ -332,7 +332,7 @@ function TokenStats() {
         version: "1",
         statement: `I attest my high score is ${Math.floor(state.goo)} Goo in Batch Wizard!`,
       });
-      const signature = await signMessageAsync({ message });
+      const signature = await signMessageAsync({ message, account: address });
       toast.success(`High score signed! ${signature.slice(0, 10)}...`);
     } catch (e: any) {
       toast.error(`Sign failed: ${e.message}`);

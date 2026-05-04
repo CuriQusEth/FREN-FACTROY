@@ -1,4 +1,4 @@
-import { ERC8021_MARKER } from '../constants';
+import { ERC8021_MARKER } from './constants';
 
 export const OFFICIAL_TEST_CASES = [
   {
