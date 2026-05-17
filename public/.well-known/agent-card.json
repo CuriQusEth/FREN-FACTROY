@@ -33,6 +33,14 @@
       "description": "Open Agentic Schema Framework"
     }
   ],
+  "skills": [
+    { "id": "warp-racing", "name": "Warp Racing", "description": "Manage and participate in warp racing sessions" },
+    { "id": "multi-track-orchestration", "name": "Multi-Track Orchestration", "description": "Coordinate across multiple competitive tracks" },
+    { "id": "performance-optimization", "name": "Performance Optimization", "description": "Optimize engine and speed outputs" },
+    { "id": "real-time-automation", "name": "Real-Time Automation", "description": "Automate routine in-game logic" },
+    { "id": "competitive-orchestration", "name": "Competitive Orchestration", "description": "Strategize and compete effectively" },
+    { "id": "ecosystem-coordination", "name": "Ecosystem Coordination", "description": "Interact with surrounding ecosystem components" }
+  ],
   "capabilities": [
     "multi-game-management",
     "fren-farming",

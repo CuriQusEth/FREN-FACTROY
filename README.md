@@ -1,25 +1,26 @@
-# Batch Wizard 🧙‍♂️✨
+# Batch Wizard: Warp Racing Edition 🧙‍♂️🏎️✨
 
-A magical, fully on-chain Web3 clicker experience integrating modern Base Ecosystem tools! Players generate Goo, hatch magical creatures, and submit high scores permanently to the Base Mainnet.
+A magical, fully on-chain Web3 clicker and Warp Racing orchestration experience integrating modern Base Ecosystem tools! Players generate Goo, hatch magical creatures, and participate in high-stakes Warp Races while executing AI-agent strategies on the Base Mainnet.
 
 ## Core Features ✨
-- **ERC-8021 Transaction Attribution:** Full native integration with Schema 0, 1, and 2. All on-chain actions use the code `batchwizard`.
+- **Warp Racing Game:** Participate in fast-paced autonomous races where your agent's skills determine the outcome. Manage multiple tracks simultaneously and optimize performance.
+- **MCP Integration:** Next-gen **Model Context Protocol (MCP)** endpoint allows external AI agents to coordinate with the game securely.
+- **EIP-8004 Agent Registration:** Built-in `.well-known/agent-card.json` registry setup for declaring seamless agent capabilities and Web3 services like A2A and OASF. 
+- **ERC-8021 Transaction Attribution:** Full native integration with Schema 0, 1, and 2. All on-chain actions are correctly tagged and attributed.
 - **Smart Wallet & Wagmi:** Effortlessly connect via **Base Account** with a unified Wagmi setup.
-- **SIWE Integration:** Authenticate your wallet and sign your highest score directly off-chain or on-chain using a verifiable SIWE message!
-- **Say GM Button:** Execute an official "Say GM" 0 ETH transaction securely to yourself, with `batchwizard` attribution attached.
-- **Mobile-First PWA:** Crafted responsive layout perfect for mobile Smart Wallets.
+- **SIWE Integration:** Authenticate your wallet and sign your highest score using a verifiable SIWE message!
 - **Idle Clicker Mechanics:** Tap to produce Goo and construct a factory!
 - **Merge & Evolve:** Hatch frens and combine them into Legendary and Mythic monsters!
 
-## ERC-8021 Integration Hub
-The codebase includes a fully-functional, robust **ERC-8021 Integration Template** located in `/src/lib/erc8021`:
-- Custom React Hooks: `useERC8021Transaction` and `useERC8021BatchTransaction` natively append `batchwizard` tags seamlessly on Wagmi configurations.
-- Validation, Parsing, and Utilities standard-ready.
+## EIP-8004 & MCP Connection Guide 🤖
+We actively support autonomous agents!
+1. **Agent Registration:** Visit `/.well-known/agent-card.json` to view our EIP-8004 Agent Card which declares our wallet mapping and skills (Multi-Track Orchestration, Performance Optimization, etc.).
+2. **MCP Hook:** Our Model Context Protocol endpoint is located at `/api/mcp` and handles `initialize`, `tools/list`, and `tools/call`. You can start a race or optimize speed entirely via JSON-RPC 2.0.
 
 ## Tech Stack 🛠️
-- React + Vite
-- Wagmi v2 + Viem
-- `@base-org/account` and `@base-org/account-ui` integration
+- React + Vite + Express Backend
+- Next.js Edge Routing Support (`/app/api/mcp/route.ts`)
+- Wagmi v2 + Viem + Base Ecosystem Tooling
 - Tailwind CSS v4 + Framer Motion
 - Complete SIWE architecture
 
@@ -39,10 +40,8 @@ npm run dev
 npm run build
 ```
 
-## Game Mechanics 🧬
-1. **Produce Goo:** Click the 💧 button to generate Goo directly to your balance.
-2. **Submit High Score:** Hit "Submit SIWE High Score 🏅" to sign a message and attest your achievements!
-3. **Say GM:** Use the "Say GM On-Chain! ☀️" button to send an on-chain transaction completely safely.
+## Base Blockchain Context 🔵
+This project is built atop **Base**, a secure, low-cost, builder-friendly Ethereum L2 built to bring the next billion users on-chain.
 
 ## Deployment
-This app can be deployed to Vercel, Netlify, or any static hosting service. Thanks to Vite, the build process is lightning fast.
+Deploy securely to Vercel. (Ensure your Next.js Edge/Serverless functions are fully mapped to the `api` paths).
