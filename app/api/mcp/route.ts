@@ -1,4 +1,15 @@
-export async function GET() {
+export async function OPTIONS(request: Request) {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
+}
+
+export async function GET(req: Request) {
   return Response.json({
     protocol: "MCP",
     version: "1.0.0",
@@ -11,7 +22,7 @@ export async function GET() {
       resources: {}
     },
     timestamp: new Date().toISOString()
-  });
+  }, { headers: { 'Access-Control-Allow-Origin': '*' } });
 }
 
 export async function POST(req: Request) {
@@ -20,7 +31,7 @@ export async function POST(req: Request) {
     const { jsonrpc, method, params, id } = body;
 
     if (jsonrpc !== "2.0") {
-      return Response.json({ jsonrpc: "2.0", id, error: { code: -32600, message: "Invalid Request" } }, { status: 400 });
+      return Response.json({ jsonrpc: "2.0", id, error: { code: -32600, message: "Invalid Request" } }, { status: 400, headers: { 'Access-Control-Allow-Origin': '*' } });
     }
 
     if (method === "initialize") {
@@ -32,7 +43,7 @@ export async function POST(req: Request) {
           serverInfo: { name: "Fren Factory MCP Endpoint", version: "1.0.0" },
           capabilities: { tools: {}, prompts: {}, resources: {} }
         }
-      });
+      }, { headers: { 'Access-Control-Allow-Origin': '*' } });
     }
 
     if (method === "tools/list") {
@@ -48,7 +59,7 @@ export async function POST(req: Request) {
             { name: "get_track_info", description: "Returns track metadata", inputSchema: { type: "object", properties: { trackId: { type: "string" } }, required: ["trackId"] } }
           ]
         }
-      });
+      }, { headers: { 'Access-Control-Allow-Origin': '*' } });
     }
 
     if (method === "tools/call") {
@@ -59,23 +70,23 @@ export async function POST(req: Request) {
           content: [{ type: "text", text: `Tool ${params?.name} executed successfully` }],
           isError: false
         }
-      });
+      }, { headers: { 'Access-Control-Allow-Origin': '*' } });
     }
 
     if (method === "prompts/list") {
-      return Response.json({ jsonrpc: "2.0", id, result: { prompts: [] } });
+      return Response.json({ jsonrpc: "2.0", id, result: { prompts: [] } }, { headers: { 'Access-Control-Allow-Origin': '*' } });
     }
 
     if (method === "resources/list") {
-      return Response.json({ jsonrpc: "2.0", id, result: { resources: [] } });
+      return Response.json({ jsonrpc: "2.0", id, result: { resources: [] } }, { headers: { 'Access-Control-Allow-Origin': '*' } });
     }
 
     return Response.json({
       jsonrpc: "2.0",
       id,
       error: { code: -32601, message: "Method not found" }
-    });
+    }, { headers: { 'Access-Control-Allow-Origin': '*' } });
   } catch (error) {
-    return Response.json({ jsonrpc: "2.0", error: { code: -32700, message: "Parse error" } }, { status: 400 });
+    return Response.json({ jsonrpc: "2.0", error: { code: -32700, message: "Parse error" } }, { status: 400, headers: { 'Access-Control-Allow-Origin': '*' } });
   }
 }

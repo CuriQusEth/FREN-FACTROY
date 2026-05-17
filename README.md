@@ -14,15 +14,15 @@ A magical, fully on-chain Web3 clicker and Warp Racing orchestration experience 
 
 ## EIP-8004 & MCP Connection Guide 🤖
 We actively support autonomous agents!
-1. **Agent Registration:** Visit `/.well-known/agent-card.json` to view our EIP-8004 Agent Card which declares our wallet mapping and skills (Multi-Track Orchestration, Performance Optimization, etc.).
-2. **MCP Hook:** Our Model Context Protocol endpoint is located at `/api/mcp` and handles `initialize`, `tools/list`, and `tools/call`. You can start a race or optimize speed entirely via JSON-RPC 2.0.
+1. **Agent Registration:** Visit `/.well-known/agent-card.json` to view our EIP-8004 Agent Card which declares our wallet mapping and skills (such as Multi-Track Orchestration, Performance Optimization).
+2. **MCP Hook:** Our Model Context Protocol endpoint is located at `/api/mcp` and natively handles JSON-RPC 2.0 requests such as `initialize`, `tools/list`, and `tools/call`. You can interact with warp racing features entirely autonomously via these endpoints.
 
 ## Tech Stack 🛠️
-- React + Vite + Express Backend
-- Next.js Edge Routing Support (`/app/api/mcp/route.ts`)
-- Wagmi v2 + Viem + Base Ecosystem Tooling
-- Tailwind CSS v4 + Framer Motion
-- Complete SIWE architecture
+- React / Vite SPA Frontend
+- Backend API powered by Express / Next.js Edge Routing
+- Integrates Wagmi v2 + Viem + Base Ecosystem Tooling
+- Tailwind CSS v4 + Framer Motion for animations
+- Fully functional SIWE authentication flow
 
 ## Getting Started 🚀
 1. Install dependencies:
@@ -44,4 +44,4 @@ npm run build
 This project is built atop **Base**, a secure, low-cost, builder-friendly Ethereum L2 built to bring the next billion users on-chain.
 
 ## Deployment
-Deploy securely to Vercel. (Ensure your Next.js Edge/Serverless functions are fully mapped to the `api` paths).
+Easily deploy to platforms such as Vercel. Make sure your serverless functions (like `/app/api/mcp/route.ts`) are properly deployed and mapped. Make sure to set any necessary environment variables appropriately in production.
