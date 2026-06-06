@@ -330,7 +330,7 @@ function TokenStats() {
         nonce,
         uri: window.location.origin,
         version: "1",
-        statement: `I attest my high score is ${Math.floor(state.goo)} Goo in Batch Wizard!`,
+        statement: `I attest my high score is ${Math.floor(state.goo)} Goo in Fren Factory!`,
       });
       const signature = await signMessageAsync({ message, account: address });
       toast.success(`High score signed! ${signature.slice(0, 10)}...`);
