@@ -4,6 +4,7 @@ import { useGame, GameProvider, Rarity, Fren } from "@/lib/GameContext";
 import { useAccount } from "wagmi";
 import { useERC8021Transaction } from "@/lib/erc8021/hooks/useERC8021Transaction";
 import { Button } from "@/components/ui/button";
+import { Sun } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -372,6 +373,27 @@ function TokenStats() {
 }
 
 function MainDashboard() {
+  const { isConnected, address } = useAccount();
+  const { sendTransaction } = useERC8021Transaction({
+    code: BUILDER_CODE,
+    schema: 1,
+  });
+
+  const sendGMTransaction = () => {
+    if (address) {
+      sendTransaction(
+        {
+          to: address,
+          data: "0x",
+        },
+        {
+          onSuccess: () => toast.success("GM! Transaction attributed via ERC-8021!"),
+          onError: (e) => toast.error(`Failed: ${e.message}`),
+        }
+      );
+    }
+  };
+
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6">
       <header className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 py-4 mb-6">
@@ -389,6 +411,15 @@ function MainDashboard() {
           </div>
         </div>
         <div className="flex gap-3 items-center">
+          {isConnected && (
+            <button
+              onClick={sendGMTransaction}
+              className="px-3 py-2 rounded-lg bg-[#E8A020]/20 hover:bg-[#E8A020]/30 border border-[#E8A020]/40 text-[#E8A020] transition-colors flex items-center gap-2 font-['Cinzel'] text-xs font-bold"
+            >
+              <Sun size={14} />
+              Say GM
+            </button>
+          )}
           <WalletConnect />
         </div>
       </header>
