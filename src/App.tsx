@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { WalletConnect } from "@/components/WalletConnect";
 import { useGame, GameProvider, Rarity, Fren } from "@/lib/GameContext";
-import { useAccount } from "wagmi";
-import { useERC8021Transaction } from "@/lib/erc8021/hooks/useERC8021Transaction";
+import { useAccount, useSignMessage } from "wagmi";
+import { useGameTransaction } from "@/lib/base-transactions";
+import { eventDispatcher } from "@/lib/game-events";
+import { Analytics } from "@/lib/analytics";
+import { PlayerStats } from "@/lib/player-stats";
+import { generateSiweNonce, createSiweMessage } from "viem/siwe";
 import { Button } from "@/components/ui/button";
 import { Sun } from "lucide-react";
 import {
@@ -45,9 +49,7 @@ function generateFren(gooInvested: number): Fren {
   const roll = Math.random();
   let rarity: Rarity = "Common";
 
-  // Example probability scaling based on Goo amount
-  const bonus = Math.min(gooInvested / 10000, 0.5); // Max 50% bonus from goo
-
+  const bonus = Math.min(gooInvested / 10000, 0.5); 
   if (roll + bonus > 0.98) rarity = "Mythic";
   else if (roll + bonus > 0.9) rarity = "Legendary";
   else if (roll + bonus > 0.7) rarity = "Epic";
@@ -64,10 +66,7 @@ function generateFren(gooInvested: number): Fren {
 function ClickerArea() {
   const { state, dispatch } = useGame();
   const { isConnected, address } = useAccount();
-  const { sendTransaction } = useERC8021Transaction({
-    code: BUILDER_CODE,
-    schema: 1,
-  });
+  const { execute, isPending } = useGameTransaction();
   const [clickScale, setClickScale] = useState(1);
 
   const handleClick = () => {
@@ -75,29 +74,19 @@ function ClickerArea() {
     setClickScale((prev) => (prev === 1 ? 0.95 : 1));
     setTimeout(() => setClickScale(1), 100);
 
-    // Mock an on-chain transaction interaction
+    eventDispatcher.dispatch('produce_goo', { amount: 1 });
+    if (address) PlayerStats.incrementGoo(address, 1);
+
     if (isConnected && Math.random() > 0.95) {
-      // 5% chance to prompt on-chain save
       toast("Save Progress On-Chain?", {
         action: {
           label: "Save",
           onClick: () => {
-            const data = encodeFunctionData({
-              abi: FREN_FACTORY_ABI,
-              functionName: "produceGoo",
-            });
-            // Construct the final data with ERC-8021 builder code
-            sendTransaction(
-              {
-                to: FREN_FACTORY_ADDRESS as `0x${string}`,
-                data: data,
-              },
-              {
-                onSuccess: () =>
-                  toast.success("Progress saved securely on Base!"),
-                onError: (e) => toast.error(`Failed: ${e.message}`),
-              },
-            );
+             const data = encodeFunctionData({
+               abi: FREN_FACTORY_ABI,
+               functionName: "produceGoo",
+             });
+             execute(FREN_FACTORY_ADDRESS as `0x${string}`, data);
           },
         },
       });
@@ -143,21 +132,11 @@ function ClickerArea() {
         <div className="mt-4 flex justify-center pb-2 z-10 relative">
           <button
             onClick={() => {
-              if (address) {
-                sendTransaction(
-                  {
-                    to: address,
-                    data: "0x",
-                  },
-                  {
-                    onSuccess: () =>
-                      toast.success("GM! Transaction attributed via ERC-8021!"),
-                    onError: (e) => toast.error(`Failed: ${e.message}`),
-                  },
-                );
-              }
+              // Sending a zero-value tx to the Factory to sync state / GM
+              execute(FREN_FACTORY_ADDRESS as `0x${string}`, "0x");
             }}
-            className="px-6 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-400 hover:to-indigo-400 rounded-2xl font-bold text-sm shadow-[0_0_15px_rgba(139,92,246,0.4)] hover:shadow-[0_0_25px_rgba(139,92,246,0.6)] transition-all text-white border-b-4 border-purple-800 active:border-b-0 active:translate-y-1"
+            disabled={isPending}
+            className="px-6 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-400 hover:to-indigo-400 rounded-2xl font-bold text-sm shadow-[0_0_15px_rgba(139,92,246,0.4)] hover:shadow-[0_0_25px_rgba(139,92,246,0.6)] transition-all text-white border-b-4 border-purple-800 active:border-b-0 active:translate-y-1 disabled:opacity-50"
           >
             Say GM On-Chain! ☀️
           </button>
@@ -169,14 +148,18 @@ function ClickerArea() {
 
 function FactoryArea() {
   const { state, dispatch } = useGame();
+  const { address } = useAccount();
   const hatchCost = 100;
 
   const handleHatch = () => {
     if (state.goo >= hatchCost) {
+      const newFren = generateFren(hatchCost);
       dispatch({
         type: "HATCH_FREN",
-        payload: { cost: hatchCost, newFren: generateFren(hatchCost) },
+        payload: { cost: hatchCost, newFren },
       });
+      eventDispatcher.dispatch('hatch_fren', { fren: newFren });
+      if (address) PlayerStats.addFren(address);
       toast.success("Hatched a new Fren! 🎉");
     } else {
       toast.error("Not enough Goo!");
@@ -184,7 +167,6 @@ function FactoryArea() {
   };
 
   const handleMerge = (fren: Fren) => {
-    // Find another fren of same rarity
     const partner = state.frens.find(
       (f) => f.id !== fren.id && f.rarity === fren.rarity,
     );
@@ -211,6 +193,7 @@ function FactoryArea() {
       type: "MERGE_FRENS",
       payload: { id1: fren.id, id2: partner.id, newFren },
     });
+    eventDispatcher.dispatch('merge_frens', { resultingFren: newFren });
     toast("Frens merged successfully! ✨", {
       icon: "🧬",
     });
@@ -307,9 +290,6 @@ function FactoryArea() {
   );
 }
 
-import { useSignMessage } from "wagmi";
-import { generateSiweNonce, createSiweMessage } from "viem/siwe";
-
 function TokenStats() {
   const { state } = useGame();
   const { address, chainId, isConnected } = useAccount();
@@ -334,6 +314,7 @@ function TokenStats() {
         statement: `I attest my high score is ${Math.floor(state.goo)} Goo in Fren Factory!`,
       });
       const signature = await signMessageAsync({ message, account: address });
+      eventDispatcher.dispatch('high_score_signed', { score: state.goo, signature });
       toast.success(`High score signed! ${signature.slice(0, 10)}...`);
     } catch (e: any) {
       toast.error(`Sign failed: ${e.message}`);
@@ -364,35 +345,21 @@ function TokenStats() {
         >
           {isSigning ? "Signing..." : "Submit SIWE High Score 🏅"}
         </button>
-        <button className="px-6 py-2 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 rounded-2xl font-bold text-sm border-b-4 border-blue-900 transition-all text-white">
-          Claim Passive Yield
-        </button>
       </div>
     </div>
   );
 }
 
 function MainDashboard() {
-  const { isConnected, address } = useAccount();
-  const { sendTransaction } = useERC8021Transaction({
-    code: BUILDER_CODE,
-    schema: 1,
-  });
+  const { isConnected } = useAccount();
 
-  const sendGMTransaction = () => {
-    if (address) {
-      sendTransaction(
-        {
-          to: "0xcD0dd3716C5561De47a24949335dF8a8CD8F71a3",
-          data: "0x",
-        },
-        {
-          onSuccess: () => toast.success("GM! Transaction attributed via ERC-8021!"),
-          onError: (e) => toast.error(`Failed: ${e.message}`),
-        }
-      );
-    }
-  };
+  useEffect(() => {
+    Analytics.init();
+    eventDispatcher.dispatch('session_start', {});
+    return () => {
+       eventDispatcher.dispatch('session_end', {});
+    };
+  }, []);
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6">
@@ -411,15 +378,6 @@ function MainDashboard() {
           </div>
         </div>
         <div className="flex gap-3 items-center">
-          {isConnected && (
-            <button
-              onClick={sendGMTransaction}
-              className="px-3 py-2 rounded-lg bg-[#E8A020]/20 hover:bg-[#E8A020]/30 border border-[#E8A020]/40 text-[#E8A020] transition-colors flex items-center gap-2 font-['Cinzel'] text-xs font-bold"
-            >
-              <Sun size={14} />
-              Say GM
-            </button>
-          )}
           <WalletConnect />
         </div>
       </header>
@@ -437,38 +395,11 @@ function MainDashboard() {
 
       <div className="mt-8 bg-white/5 backdrop-blur-lg border border-white/10 rounded-[32px] p-6">
         <h2 className="text-xs font-bold uppercase tracking-widest text-white/60 mb-4">
-          Prompt Book for Art Assets
+          Data Integration (MCP / AI Ready)
         </h2>
-        <div className="space-y-4">
-          <div className="p-4 bg-white/5 border border-white/5 rounded-2xl font-mono text-[10px] text-white/70">
-            <span className="text-white/40 block mb-2">
-              // Midjourney / Grok - Mascot / UI Elements
-            </span>
-            "A highly polished 3D icon of an adorable blob character in
-            isometric view, holding a wrench, bright pastel colors, neon
-            accents, Base blockchain blue ecosystem vibe, white background,
-            suitable for a playful casual crypto clicker game UI, ultra high
-            definition, octane render --v 6.0"
-          </div>
-          <div className="p-4 bg-white/5 border border-white/5 rounded-2xl font-mono text-[10px] text-white/70">
-            <span className="text-white/40 block mb-2">
-              // Midjourney / Grok - Fren Evolution (Legendary)
-            </span>
-            "Cute chibi cyberpunk pet mascot, glowing neon legendary aura,
-            holographic tech wear, adorable big eyes, standing heroically,
-            bright vivid colors on a clean dark background, 2d vector art style,
-            clean lines, game asset ready, dynamic pose --v 6.0"
-          </div>
-          <div className="p-4 bg-white/5 border border-white/5 rounded-2xl font-mono text-[10px] text-white/70">
-            <span className="text-white/40 block mb-2">
-              // Midjourney / Grok - Resource Icon (Goo)
-            </span>
-            "A shiny, translucent drop of neon green goo resource item for a
-            mobile game, glowing core, 3d glossy render, bright and saturated
-            colors, isolated on white background, hyperdetailed, magical --v
-            6.0"
-          </div>
-        </div>
+        <p className="text-sm text-white/70 mb-4">
+          Every player action is logged, SIWE signatures generate high score attestations, and all base-transactions execute with the ERC-8021 <code className="bg-black/30 px-1 py-0.5 rounded text-yellow-300">bc_i3cpa0pz</code> Builder Code! Ask your Agent to review analytics.
+        </p>
       </div>
     </div>
   );
@@ -478,13 +409,11 @@ export default function App() {
   return (
     <GameProvider>
       <div className="min-h-screen bg-[#0a0a1f] relative font-sans text-white overflow-x-hidden selection:bg-blue-500/30">
-        {/* Mesh Background */}
         <div className="fixed inset-0 z-0 opacity-40 pointer-events-none">
           <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-[#0052FF] blur-[120px]"></div>
           <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-[#FF00E5] blur-[140px]"></div>
           <div className="absolute top-[30%] left-[40%] w-[30%] h-[30%] rounded-full bg-[#00F0FF] blur-[100px]"></div>
         </div>
-
         <div className="relative z-10 w-full h-full flex flex-col p-6 min-h-screen">
           <MainDashboard />
           <Toaster theme="dark" className="opacity-90" />
@@ -493,3 +422,4 @@ export default function App() {
     </GameProvider>
   );
 }
+

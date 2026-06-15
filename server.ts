@@ -67,9 +67,29 @@ async function startServer() {
                 inputSchema: { type: "object", properties: {} }
               },
               {
-                name: "optimize_speed",
-                description: "Triggers performance optimization",
-                inputSchema: { type: "object", properties: {} }
+                name: "get_wallet_balance",
+                description: "Returns the Base ETH or token balance of an address via Base MCP",
+                inputSchema: { type: "object", properties: { address: { type: "string" } }, required: ["address"] }
+              },
+              {
+                name: "send_transaction",
+                description: "Sends a transaction on Base network",
+                inputSchema: { type: "object", properties: { to: { type: "string" }, value: { type: "string" }, data: { type: "string" } }, required: ["to"] }
+              },
+              {
+                name: "swap_tokens",
+                description: "Swaps tokens on Base via 1inch/Uniswap plugins",
+                inputSchema: { type: "object", properties: { fromToken: { type: "string" }, toToken: { type: "string" }, amount: { type: "string" } }, required: ["fromToken", "toToken", "amount"] }
+              },
+              {
+                name: "request_faucet_funds",
+                description: "Requests funds from the Base Sepolia faucet",
+                inputSchema: { type: "object", properties: { address: { type: "string" } }, required: ["address"] }
+              },
+              {
+                name: "web_request",
+                description: "Fetches remote URLs like from docs.base.org",
+                inputSchema: { type: "object", properties: { url: { type: "string" } }, required: ["url"] }
               },
               {
                 name: "get_track_info",
