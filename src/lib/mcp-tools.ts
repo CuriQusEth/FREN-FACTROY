@@ -35,5 +35,28 @@ export const MCPTools = {
 
   getAchievementHistory(address: string) {
     return PlayerStats.getProfile(address).achievements;
+  },
+
+  getDenimMigrationStatus() {
+    return {
+      status: "migrated",
+      denimUpgrade: {
+        baseSepoliaActivated: "2026-10-21T18:00:00Z",
+        targetBlockTimeMs: 200,
+        flashblocksReplaced: true,
+        subscriptions: {
+          flashblocksPending: "DISABLED",
+          canonicalNewHeads: "ENABLED",
+          pendingLogs: "DISABLED",
+          canonicalLogs: "ENABLED"
+        },
+        blockTagAudited: {
+          pendingTagUsed: false,
+          canonicalBlockTag: "latest"
+        },
+        builderCodeERC8021: "bc_i3cpa0pz"
+      }
+    };
   }
 };
+

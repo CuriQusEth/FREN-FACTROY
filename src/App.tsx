@@ -3,6 +3,7 @@ import { WalletConnect } from "@/components/WalletConnect";
 import { useGame, GameProvider, Rarity, Fren } from "@/lib/GameContext";
 import { useAccount, useSignMessage } from "wagmi";
 import { useGameTransaction } from "@/lib/base-transactions";
+import { DenimBlockMonitor } from "@/components/DenimBlockMonitor";
 import { eventDispatcher } from "@/lib/game-events";
 import { Analytics } from "@/lib/analytics";
 import { PlayerStats } from "@/lib/player-stats";
@@ -381,6 +382,8 @@ function MainDashboard() {
           <WalletConnect />
         </div>
       </header>
+
+      <DenimBlockMonitor />
 
       <TokenStats />
 

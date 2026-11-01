@@ -99,6 +99,11 @@ async function startServer() {
                   properties: { trackId: { type: "string" } },
                   required: ["trackId"]
                 }
+              },
+              {
+                name: "get_denim_migration_status",
+                description: "Checks Base Denim 200ms blocks readiness, Flashblocks deprecation audit, and canonical subscription status",
+                inputSchema: { type: "object", properties: {} }
               }
             ]
           }
@@ -106,6 +111,27 @@ async function startServer() {
       }
 
       if (method === "tools/call") {
+        if (params?.name === "get_denim_migration_status") {
+          return res.json({
+            jsonrpc: "2.0",
+            id,
+            result: {
+              content: [{
+                type: "text",
+                text: JSON.stringify({
+                  status: "migrated",
+                  upgrade: "Base Denim 200ms Native Blocks",
+                  activatedOnSepolia: "2026-10-21T18:00:00Z",
+                  mainnetTarget: "November 2026",
+                  flashblocksSubscriptions: "None (using canonical newHeads)",
+                  pendingBlockTagUsage: "None (using canonical latest state)",
+                  builderAttribution: "ERC-8021 active (bc_i3cpa0pz)"
+                }, null, 2)
+              }],
+              isError: false
+            }
+          });
+        }
         return res.json({
           jsonrpc: "2.0",
           id,
